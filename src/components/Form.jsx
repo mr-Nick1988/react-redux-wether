@@ -1,32 +1,60 @@
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { data_weather, city_name } from '../actions/weatherActions';
+import {api_key, base_url} from "../utils/constants.js";
 
-import {useState} from "react";
-import {useDispatch} from "react-redux";
-import {city_name} from "../actions/weatherActions.js";
-
-
-const Form = ({getWeather}) => {
+const Form = () => {
     const [city, setCity] = useState('');
     const dispatch = useDispatch();
 
-    const getCity = e => {
+    const getWeather = (e) => {
         e.preventDefault();
-        dispatch(city_name(city))
-        getWeather(city);
-    }
+        if (city.trim() === '') {
+            dispatch(city_name('Please enter a city name'));
+            return;
+        }
 
+        fetch(`${base_url}?q=${city}&appid=${api_key}&units=metric`)
+            .then(result => result.json())
+            .then(data => {
+                if (data) {
+                    dispatch(data_weather({
+                        country: data.sys.country,
+                        city: data.name,
+                        temp: data.main.temp,
+                        pressure: data.main.pressure,
+                        sunset: data.sys.sunset
+                    }));
+                } else {
+                    dispatch(city_name('City not found. Please try again.'));
+                }
+            })
+            .catch(() => {
+                dispatch(city_name('Error fetching data. Please try again.'));
+            });
+    };
 
     return (
-        <form onSubmit={getCity}>
+        <form onSubmit={getWeather}>
             <input
-                onChange={e => setCity(e.target.value)}
                 type="text"
                 value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Enter city"
             />
             <button type="submit">Get Weather</button>
         </form>
     );
 };
 
-
 export default Form;
+
+
+
+
+
+
+
+
+
 

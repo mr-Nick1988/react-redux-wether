@@ -1,5 +1,5 @@
 import Form from "./Form.jsx";
-import Weather from "./Weather.jsx";
+import {Weather} from "./Weather.jsx";
 
 
 const Data = () => {

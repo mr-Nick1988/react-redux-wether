@@ -1,43 +1,41 @@
 
 import { useDispatch } from 'react-redux';
-import { data_weather, city_name } from '../actions/weatherActions';
-import {api_key, base_url} from "../utils/constants.js";
-import {useState} from "react";
+import { useState } from 'react';
+
+
+import { api_key, base_url } from '../utils/constants.js';
+import {setLoading, setMessage, setWeatherInfo} from "../features/weatherSlice.js";
+import {fetchWeather} from "../features/api/weatherApi.js";
 
 const Form = () => {
     const [city, setCity] = useState('');
     const dispatch = useDispatch();
 
-    const getWeather = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (city.trim() === '') {
-            dispatch(city_name('Please enter a city name'));
+            dispatch(setMessage('Please enter a city name'));
             return;
         }
 
-        fetch(`${base_url}?q=${city}&appid=${api_key}&units=metric`)
-            .then(result => result.json())
-            .then(data => {
-                if (data) {
-                    dispatch(data_weather({
-                        country: data.sys.country,
-                        city: data.name,
-                        temp: data.main.temp,
-                        pressure: data.main.pressure,
-                        sunset: data.sys.sunset
-                    }));
-                } else {
-                    dispatch(city_name(''));
-                }
-            })
-            .catch(() => {
-                dispatch(city_name('Enter CORRECT city name'));
-            });
-        setCity('')
+        dispatch(setLoading(true));
+
+        try {
+            const weatherData = await fetchWeather(city, api_key, base_url);
+            dispatch(setWeatherInfo(weatherData));
+            dispatch(setMessage(''));
+        } catch (error) {
+            dispatch(setMessage(error.message));
+        } finally {
+            dispatch(setLoading(false));
+        }
+
+        setCity('');
     };
 
     return (
-        <form onSubmit={getWeather}>
+        <form onSubmit={handleSubmit}>
             <input
                 type="text"
                 value={city}
@@ -48,13 +46,7 @@ const Form = () => {
         </form>
     );
 };
-
 export default Form;
-
-
-
-
-
 
 
 

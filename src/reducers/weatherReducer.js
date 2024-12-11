@@ -4,7 +4,7 @@ const initialState = {
     weatherInfo: {},
     message: 'ENTER CITY NAME'
 };
-const weatherReducer = (state = initialState, action) => {
+ export const weatherReducer = (state = initialState, action) => {
     switch (action.type) {
         case DATA_WEATHER:
             return {...state, weatherInfo: action.payload, message: ''};
@@ -15,4 +15,3 @@ const weatherReducer = (state = initialState, action) => {
     }
 }
 
-export default weatherReducer;

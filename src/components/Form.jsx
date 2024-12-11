@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+
 import { useDispatch } from 'react-redux';
 import { data_weather, city_name } from '../actions/weatherActions';
 import {api_key, base_url} from "../utils/constants.js";
+import {useState} from "react";
 
 const Form = () => {
     const [city, setCity] = useState('');
@@ -26,12 +27,13 @@ const Form = () => {
                         sunset: data.sys.sunset
                     }));
                 } else {
-                    dispatch(city_name('City not found. Please try again.'));
+                    dispatch(city_name(''));
                 }
             })
             .catch(() => {
-                dispatch(city_name('Error fetching data. Please try again.'));
+                dispatch(city_name('Enter CORRECT city name'));
             });
+        setCity('')
     };
 
     return (
